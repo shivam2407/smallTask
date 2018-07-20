@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const userRouter = require('./routers/user');
 const app = express();
 const morgan = require('morgan');
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/flare',{useNewUrlParser: true});
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended:true}));
