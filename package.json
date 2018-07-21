@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/shivam2407/smallTask#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
     "mongoose": "^5.2.4"
   },
   "devDependencies": {
