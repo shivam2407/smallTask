@@ -1,10 +1,11 @@
-const request = require('supertest')
+/* eslint-disable */
+const request = require('supertest');
 const app = require('./server');
 const expect = require('chai').expect;
 
 describe('USER ROUTE TESTS', function() {
-    let token = null;
-    it('should insert new user and than fetch the same user by id', function(done) {
+    let Cookies = null;
+    it('should register new user and than send the Auth token in cookie', function(done) {
         request(app)
             .post('/user/register')
             .set('Accept','application/json')
@@ -17,17 +18,18 @@ describe('USER ROUTE TESTS', function() {
             .expect(200)
             .end(function(err,res) {
                 expect(res.body).to.be.an('object');
-                expect(res.body).have.property('token');
+                expect(res.body).have.property('auth');
                 expect(res.body.auth).equals(true);
-                token=res.body.token;
+                expect(res.header).has.property('set-cookie');
+                Cookies=res.header['set-cookie'].pop().split(';')[0];
                 done();
             })
     });
     it('should return object of user', function(done){
         request(app)
             .get('/user')
+            .set('Cookie', [Cookies])
             .set('Accept', 'application/json')
-            .set('x-access-token',token)
             .expect('Content-Type',/json/)
             .expect(200)
             .end(function(err,res) {
@@ -51,13 +53,15 @@ describe('USER ROUTE TESTS', function() {
                 if (err) throw err;
                 expect(res.body).to.be.an('object');
                 expect(res.body.auth).equals(true);
-                expect(res.body.token).to.be.an('string');
+                expect(res.header).has.property('set-cookie');
+                Cookies = res.header['set-cookie'].pop().split(';')[0];
                 done();
             })
     });
     it('should change firstName from Shivam to Luke', function(done) {
         request(app)
-            .patch('/user/'+token)
+            .patch('/user/')
+            .set('Cookie', [Cookies])
             .send({
                 op:"update",
                 field:"firstName",
@@ -70,12 +74,23 @@ describe('USER ROUTE TESTS', function() {
                 done();
             })
     });
-    it('should return 200 status showing succ. deletion', function(done) {
+    it('should return 200 status showing success deletion', function(done) {
         request(app)
-            .delete('/user/'+token)
+            .delete('/user/')
+            .set('Cookie', [Cookies])
             .expect(200)
             .end(function(err,res) {
                 if (err) throw err;
+                done();
+            })
+    });
+    it('should return return status 200', function(done) {
+        request(app)
+            .get('/user/logout')
+            .expect(200)
+            .end( function(err,res) {
+                if (err) throw err;
+                expect(res.body.logout).equal(true);
                 done();
             })
     });
