@@ -58,6 +58,24 @@ describe('USER ROUTE TESTS', function() {
                 done();
             })
     });
+    it('should return incorrect username or password', function(done){
+        request(app)
+            .get('/user/login')
+            .set('Accept', 'application/json')
+            .send({
+                email: 'shivarawat24@gmail.com',
+                password: '1234',
+            })
+            .expect('Content-Type',/json/)
+            .expect(401)
+            .end(function(err,res) {
+                if (err) throw err;
+                expect(res.body).to.be.an('object');
+                expect(res.body.auth).equals(false);
+                expect(res.body.message).equals('incorrect username or password')
+                done();
+            })
+    });
     it('should change firstName from Shivam to Luke', function(done) {
         request(app)
             .patch('/user/')

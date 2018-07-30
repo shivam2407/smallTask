@@ -76,18 +76,19 @@ userRouter.get('/login', (req, res, next) => {
     const isPasswordValid = bcrypt.compareSync(req.body.password,
       user.password);
     if (!isPasswordValid) {
-      res.status(401).json({
+      res.status(401).send({
         auth: false,
-        token: null,
+        message: 'incorrect username or password',
       });
+    } else {
+      const token = jwt.sign({
+        id: user._id,
+      }, process.env.HMACSECRET || 'secret', {
+        expiresIn: 8640,
+      });
+      res.cookie('authToken', token, { expire: new Date() + 8640 })
+        .json({auth: true });
     }
-    const token = jwt.sign({
-      id: user._id,
-    }, process.env.HMACSECRET || 'secret', {
-      expiresIn: 8640,
-    });
-    res.cookie('authToken', token, { expire: new Date() + 8640 })
-      .json({auth: true });
   });
 });
 
