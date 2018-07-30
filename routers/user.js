@@ -24,8 +24,12 @@ userRouter.post('/register', (req, res, next) => {
     }, process.env.HMACSECRET || 'secret', {
       expiresIn: 8640,
     });
-    res.cookie('authToken', token, { expire: new Date() + 8640 })
-      .json({ auth: true });
+    res.cookie('authToken', token, {
+      expire: new Date() + 8640,
+    })
+      .json({
+        auth: true,
+      });
   });
 });
 
@@ -69,25 +73,33 @@ userRouter.get('/login', (req, res, next) => {
   Users.findOne({
     email: req.body.email,
   }, (err, user) => {
-    if (err) res.status(500).send('There was a problem fetching user');
+    if (err) next(err);
     if (!user) {
-      res.send(401).send('You have not registered');
-    }
-    const isPasswordValid = bcrypt.compareSync(req.body.password,
-      user.password);
-    if (!isPasswordValid) {
       res.status(401).send({
         auth: false,
-        message: 'incorrect username or password',
+        message:'incorrect username or password',
       });
     } else {
-      const token = jwt.sign({
-        id: user._id,
-      }, process.env.HMACSECRET || 'secret', {
-        expiresIn: 8640,
-      });
-      res.cookie('authToken', token, { expire: new Date() + 8640 })
-        .json({auth: true });
+      const isPasswordValid = bcrypt.compareSync(req.body.password,
+        user.password);
+      if (!isPasswordValid) {
+        res.status(401).send({
+          auth: false,
+          message: 'incorrect username or password',
+        });
+      } else {
+        const token = jwt.sign({
+          id: user._id,
+        }, process.env.HMACSECRET || 'secret', {
+          expiresIn: 8640,
+        });
+        res.cookie('authToken', token, {
+          expire: new Date() + 8640,
+        })
+          .json({
+            auth: true,
+          });
+      }
     }
   });
 });
@@ -141,8 +153,12 @@ userRouter.patch('/', (req, res) => {
         message: 'Can not verify token',
       });
     }
-    const { field } = req.body;
-    const { value } = req.body;
+    const {
+      field,
+    } = req.body;
+    const {
+      value,
+    } = req.body;
     const changeObj = {};
     changeObj[field] = value;
     Users.findOneAndUpdate({
@@ -166,7 +182,7 @@ userRouter.get('/logout', (req, res, next) => {
 });
 
 
-userRouter.use((err,req,res,next) => {
+userRouter.use((err, req, res, next) => {
   res.status(500).send(err);
 });
 
