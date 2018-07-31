@@ -70,7 +70,7 @@ describe('USER ROUTE TESTS', function() {
                 password: '1234',
             })
             .expect('Content-Type',/json/)
-            .expect(402)
+            .expect(401)
             .end(function(err,res) {
                 if (err) throw err;
                 expect(res.body).to.be.an('object');
