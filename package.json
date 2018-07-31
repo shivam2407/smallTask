@@ -4,7 +4,7 @@
   "description": "Earn side money by doing side jobs",
   "main": "server.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha test.js",
+    "test": "./node_modules/.bin/mocha test.js --exit",
     "start": "node server.js"
   },
   "repository": {
