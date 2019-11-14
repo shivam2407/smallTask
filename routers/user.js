@@ -38,14 +38,14 @@ userRouter.post('/register', (req, res, next) => {
  * @returns: Object of user without password
  */
 userRouter.get('/', (req, res, next) => {
-  const cookie = req.cookies;
+  var cookie = req.cookies;
   if (!cookie) {
     res.status(401).json({
       auth: false,
       message: 'Cookies not found',
     });
   }
-  const token = cookie.authToken;
+  var token = cookie.authToken;
   jwt.verify(token, process.env.HMACSECRET || 'secret', (err, decoded) => {
     if (err) {
       res.status(401).json({
